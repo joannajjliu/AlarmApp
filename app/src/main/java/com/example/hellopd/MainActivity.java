@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
             Log.i("opening patch", "error opening patch");
             Log.i("opening patch", e.toString());
         }
+        
+        int i = 0;
     }
 
 
