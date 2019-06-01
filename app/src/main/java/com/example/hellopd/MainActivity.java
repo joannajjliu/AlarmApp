@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.Switch;
 
 import org.puredata.android.io.AudioParameters;
@@ -34,13 +35,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initGUI(){
-        Switch onOffSwitch = (Switch) findViewById(R.id.onOffSwitch);
+        final EditText editText = (EditText) findViewById(R.id.freqNum);
+//        editText.setText(0);//set the text in edit text
+
+        Switch onOffSwitch = findViewById(R.id.onOffSwitch);
         onOffSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Log.i("onOffSwitch", String.valueOf(isChecked));
                 float val = (isChecked) ? 1.0f: 0.0f;
+                float freq = Float.parseFloat(editText.getText().toString());
                 PdBase.sendFloat("onOff", val);
+
+                PdBase.sendFloat("freqNum", freq);
             }
         });
     }
