@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.SeekBar;
 import android.widget.Switch;
 
 import org.puredata.android.io.AudioParameters;
@@ -17,6 +18,9 @@ import java.io.File;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
+
+    EditText freqText;
+    SeekBar freqSlider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,12 +35,33 @@ public class MainActivity extends AppCompatActivity {
             Log.i("onCreate", "initialization and loading gone wrong :(");
             finish();
         }
+
         initGUI();
     }
 
     private void initGUI(){
-        final EditText editText = (EditText) findViewById(R.id.freqNum);
-//        editText.setText(0);//set the text in edit text
+        freqText = (EditText) findViewById(R.id.freqNum);
+        freqSlider = findViewById(R.id.freqSlider);
+
+        SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                // updated continuously as the user slides the thumb
+                freqText.setText(String.valueOf(progress));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // called when the user first touches the SeekBar
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                // called after the user finishes moving the SeekBar
+            }
+        };
+
+        freqSlider.setOnSeekBarChangeListener(seekBarChangeListener);
 
         Switch onOffSwitch = findViewById(R.id.onOffSwitch);
         onOffSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -44,9 +69,8 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Log.i("onOffSwitch", String.valueOf(isChecked));
                 float val = (isChecked) ? 1.0f: 0.0f;
-                float freq = Float.parseFloat(editText.getText().toString());
+                float freq = Float.parseFloat(freqText.getText().toString());
                 PdBase.sendFloat("onOff", val);
-
                 PdBase.sendFloat("freqNum", freq);
             }
         });
