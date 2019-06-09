@@ -8,6 +8,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Switch;
+import android.widget.ToggleButton;
 
 import org.puredata.android.io.AudioParameters;
 import org.puredata.android.io.PdAudio;
@@ -46,51 +47,32 @@ public class MainActivity extends AppCompatActivity {
         freqText = (EditText) findViewById(R.id.freqNum);
         freqSlider = (SeekBar) findViewById(R.id.freqSlider);
 
-        final Switch onOffSwitch = findViewById(R.id.onOffSwitch);
+        //final Switch onOffSwitch = findViewById(R.id.onOffSwitch);
 
-
-
-        SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                // updated continuously as the user slides the thumb
-
-                freqText.setText(String.valueOf(progress));
-                progress_val = progress;
-                PdBase.sendFloat("freqNum", progress_val);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                // called when the user first touches the SeekBar
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                // called after the user finishes moving the SeekBar
-                //PdBase.sendFloat("freqNum", progress_val);
-                /*
-                onOffSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        freqSlider.setOnSeekBarChangeListener(
+                new SeekBar.OnSeekBarChangeListener() {
                     @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        Log.i("onOffSwitch", String.valueOf(isChecked));
-                        float val = (isChecked) ? 1.0f: 0.0f;
-                        if (isChecked) {
-                            float freq = Float.parseFloat(freqText.getText().toString());
-                            PdBase.sendFloat("onOff", val);
-                            PdBase.sendFloat("freqNum", progress_val);
-                        } else {
-                            PdBase.sendFloat("onOff", val);
-                        }
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        // updated continuously as the user slides the thumb
+
+                        freqText.setText(String.valueOf(progress));
+                        progress_val = progress;
+                        PdBase.sendFloat("freqNum", progress_val);
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                        // called when the user first touches the SeekBar
 
                     }
-                });
-                */
-            }
-        };
 
-        freqSlider.setOnSeekBarChangeListener(seekBarChangeListener);
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        // called after the user finishes moving the SeekBar
 
+                    }
+                }
+        );
     }
 
     private void loadPDPatch(){
@@ -137,4 +119,14 @@ public class MainActivity extends AppCompatActivity {
         PdAudio.stopAudio();
     }
 
+    //toggle button to control on/off frequency:
+    public void changeState(View view) {
+        boolean checked = ((ToggleButton)view).isChecked();
+        if (checked) {
+            PdBase.sendFloat("onOff", 1.0f);
+            PdBase.sendFloat("freqNum", progress_val);
+        } else {
+            PdBase.sendFloat("onOff", 0.0f);
+        }
+    }
 }
