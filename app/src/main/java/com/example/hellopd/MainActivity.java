@@ -3,6 +3,7 @@ package com.example.hellopd;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
@@ -39,15 +40,24 @@ public class MainActivity extends AppCompatActivity {
         initGUI();
     }
 
+    public int progress_val;
+
     private void initGUI(){
         freqText = (EditText) findViewById(R.id.freqNum);
-        freqSlider = findViewById(R.id.freqSlider);
+        freqSlider = (SeekBar) findViewById(R.id.freqSlider);
+
+        final Switch onOffSwitch = findViewById(R.id.onOffSwitch);
+
+
 
         SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 // updated continuously as the user slides the thumb
+
                 freqText.setText(String.valueOf(progress));
+                progress_val = progress;
+                PdBase.sendFloat("freqNum", progress_val);
             }
 
             @Override
@@ -58,22 +68,29 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 // called after the user finishes moving the SeekBar
+                //PdBase.sendFloat("freqNum", progress_val);
+                /*
+                onOffSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        Log.i("onOffSwitch", String.valueOf(isChecked));
+                        float val = (isChecked) ? 1.0f: 0.0f;
+                        if (isChecked) {
+                            float freq = Float.parseFloat(freqText.getText().toString());
+                            PdBase.sendFloat("onOff", val);
+                            PdBase.sendFloat("freqNum", progress_val);
+                        } else {
+                            PdBase.sendFloat("onOff", val);
+                        }
+
+                    }
+                });
+                */
             }
         };
 
         freqSlider.setOnSeekBarChangeListener(seekBarChangeListener);
 
-        Switch onOffSwitch = findViewById(R.id.onOffSwitch);
-        onOffSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.i("onOffSwitch", String.valueOf(isChecked));
-                float val = (isChecked) ? 1.0f: 0.0f;
-                float freq = Float.parseFloat(freqText.getText().toString());
-                PdBase.sendFloat("onOff", val);
-                PdBase.sendFloat("freqNum", freq);
-            }
-        });
     }
 
     private void loadPDPatch(){
@@ -119,4 +136,5 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         PdAudio.stopAudio();
     }
+
 }
