@@ -47,8 +47,9 @@ public class MainActivity extends AppCompatActivity {
         }
         initSine();
         initSaw();
-        initVolSaw();
         initSqr();
+        initVolSaw();
+
     }
 
     public int sine_progress_val;
