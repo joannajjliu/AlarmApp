@@ -28,6 +28,10 @@ public class MainActivity extends AppCompatActivity {
     SeekBar sawSlider;
     SeekBar sqrSlider;
 
+    SeekBar sawVolSlider;
+
+    EditText sawVol;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,12 +47,15 @@ public class MainActivity extends AppCompatActivity {
         }
         initSine();
         initSaw();
+        initVolSaw();
         initSqr();
     }
 
     public int sine_progress_val;
     public int saw_progress_val;
     public int sqr_progress_val;
+
+    public int saw_vol_progress_val;
 
     private void initSine(){
         sineText = (EditText) findViewById(R.id.sineNum);
@@ -79,11 +86,37 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
+    private void initVolSaw(){
+
+        sawVolSlider = (SeekBar) findViewById(R.id.sawVolSlider);
+        sawVol = (EditText) findViewById(R.id.sawVol);
+
+        sawVolSlider.setOnSeekBarChangeListener(
+                new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        // updated continuously as the user slides the thumb
+                        sawVol.setText(String.valueOf(progress));
+                        saw_vol_progress_val = progress;
+                        PdBase.sendFloat("sawvolNum", saw_vol_progress_val);
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                        // called when the user first touches the SeekBar
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        // called after the user finishes moving the SeekBar
+                    }
+                }
+        );
+    }
+
     private void initSaw(){
         sawText = (EditText) findViewById(R.id.sawNum);
         sawSlider = (SeekBar) findViewById(R.id.sawSlider);
-
-        //final Switch onOffSwitch = findViewById(R.id.onOffSwitch);
 
         sawSlider.setOnSeekBarChangeListener(
                 new SeekBar.OnSeekBarChangeListener() {
@@ -196,6 +229,7 @@ public class MainActivity extends AppCompatActivity {
         if (checked) {
             PdBase.sendFloat("sawonOff", 1.0f);
             PdBase.sendFloat("sawfreqNum", saw_progress_val);
+            PdBase.sendFloat("sawvolNum", saw_vol_progress_val);
         } else {
             PdBase.sendFloat("sawonOff", 0.0f);
         }
