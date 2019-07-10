@@ -1,5 +1,6 @@
 package com.example.hellopd;
 
+import android.content.Intent;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -39,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
     Button b_pattern;
     Vibrator vibrator;
 
+    Button b_activity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +60,23 @@ public class MainActivity extends AppCompatActivity {
         initSqr();
         initVolSaw();
         initVib();
+        initActivity();
 
+    }
+
+    private void initActivity(){
+        b_activity = (Button) findViewById(R.id.b_activity);
+        b_activity.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                openActivity2();
+            }
+        });
+    }
+
+    public void openActivity2(){
+        Intent intent = new Intent(this, Main2Activity.class);
+        startActivity(intent);
     }
 
     public int sine_progress_val;
