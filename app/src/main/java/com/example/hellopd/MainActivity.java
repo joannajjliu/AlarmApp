@@ -1,9 +1,11 @@
 package com.example.hellopd;
 
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.ToggleButton;
@@ -32,6 +34,11 @@ public class MainActivity extends AppCompatActivity {
 
     EditText sawVol;
 
+    Button b_long;
+    Button b_short;
+    Button b_pattern;
+    Vibrator vibrator;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         initSaw();
         initSqr();
         initVolSaw();
+        initVib();
 
     }
 
@@ -57,6 +65,48 @@ public class MainActivity extends AppCompatActivity {
     public int sqr_progress_val;
 
     public int saw_vol_progress_val;
+
+    private void initVib(){
+        b_long = (Button) findViewById(R.id.b_long);
+        b_short = (Button) findViewById(R.id.b_short);
+        b_pattern = (Button) findViewById(R.id.b_pattern);
+
+        vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+
+        b_long.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //vibrate in ms
+                vibrator.vibrate(500);
+
+            }
+        });
+
+        b_short.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //vibrate in ms
+                vibrator.vibrate(50);
+
+            }
+        });
+
+        b_pattern.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                // 0 : Start without a delay
+                // 400 : Vibrate for 400 milliseconds
+                // 200 : Pause for 200 milliseconds
+                // 400 : Vibrate for 400 milliseconds
+                long[] mVibratePattern = new long[]{0, 400, 200, 400};
+
+                // -1 : Do not repeat this pattern
+                // pass 0 if you want to repeat this pattern from 0th index
+                vibrator.vibrate(mVibratePattern, -1);
+            }
+        });
+    }
 
     private void initSine(){
         sineText = (EditText) findViewById(R.id.sineNum);
