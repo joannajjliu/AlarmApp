@@ -57,6 +57,9 @@ public class Alarm extends AppCompatActivity {
         currentTime = findViewById(R.id.textClock);
         //final Ringtone r = RingtoneManager.getRingtone(getApplicationContext(),RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE));
 
+        Log.d("currtime", currentTime.getText().toString());
+        Log.d("alrmtime", AlarmTime());
+
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -189,8 +192,10 @@ public class Alarm extends AppCompatActivity {
 
         String stringAlarmTime;
 
-        if(alarmHours > 12){ //PM
-            alarmHours = alarmHours - 12;
+        if(alarmHours >= 12){ //PM
+            if (alarmHours > 12) {
+                alarmHours = alarmHours - 12;
+            }
             stringAlarmTime = alarmHours.toString().concat(":").concat(stringAlarmMinutes).concat(" PM");
 
         } else { //AM
