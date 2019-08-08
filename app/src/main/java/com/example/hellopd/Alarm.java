@@ -33,15 +33,10 @@ public class Alarm extends AppCompatActivity {
     TextClock currentTime;
 
     //use Saw wave as alarm:
-    EditText sawText;
     SeekBar sawSlider;
-
-    public int saw_progress_val;
 
     public int alarm_freq = 19;
     public int alarm_vol = 17;
-
-    public int saw_vol_progress_val;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,11 +61,14 @@ public class Alarm extends AppCompatActivity {
             @Override
             public void run() {
                 if (currentTime.getText().toString().equals(AlarmTime())) {
-                    //r.play();
+                    r.play();
+                    /*
                     PdBase.sendFloat("alrmfreqNum", alarm_freq);
                     PdBase.sendFloat("alrmvolNum", alarm_vol);
+                    PdBase.sendFloat("alrmonOff", 1.0f);
+                    */
                 } else {
-                    //r.stop();
+                    r.stop();
                 }
 
             }
@@ -78,7 +76,6 @@ public class Alarm extends AppCompatActivity {
 
         initSaw();
     }
-
 
     private void initSaw(){
         //sawText = (EditText) findViewById(R.id.sawNum);
@@ -150,7 +147,13 @@ public class Alarm extends AppCompatActivity {
         PdAudio.stopAudio();
     }
 
+    //turn off alarm:
+    public void stopAlarm(View view) {
+        PdBase.sendFloat("alrmonOff", 0.0f);
+    }
+
     //toggle button to control saw on/off:
+    /*
     public void sawState(View view) {
         boolean checked = ((ToggleButton)view).isChecked();
         if (checked) {
@@ -161,6 +164,7 @@ public class Alarm extends AppCompatActivity {
             PdBase.sendFloat("alrmonOff", 0.0f);
         }
     }
+    */
 
 
 
@@ -189,4 +193,6 @@ public class Alarm extends AppCompatActivity {
 
         return stringAlarmTime;
     }
+
+
 }
