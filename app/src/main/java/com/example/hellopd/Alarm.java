@@ -36,7 +36,8 @@ public class Alarm extends AppCompatActivity {
     SeekBar sawSlider;
 
     public int alarm_freq = 19;
-    public int alarm_vol = 17;
+    public int alarm_vol = 30; //initial volume
+    public int alrm_off = 0; //turns to 1 when off
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,25 +55,29 @@ public class Alarm extends AppCompatActivity {
 
         alarmTime = findViewById(R.id.timePicker);
         currentTime = findViewById(R.id.textClock);
-        final Ringtone r = RingtoneManager.getRingtone(getApplicationContext(),RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE));
+        //final Ringtone r = RingtoneManager.getRingtone(getApplicationContext(),RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE));
 
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 if (currentTime.getText().toString().equals(AlarmTime())) {
-                    r.play();
-                    /*
+                    //r.play();
+
                     PdBase.sendFloat("alrmfreqNum", alarm_freq);
                     PdBase.sendFloat("alrmvolNum", alarm_vol);
-                    PdBase.sendFloat("alrmonOff", 1.0f);
-                    */
+                    if (alrm_off == 1) {
+                        PdBase.sendFloat("alrmonOff", 0.0f);
+                    } else {
+                        PdBase.sendFloat("alrmonOff", 1.0f);
+                    }
                 } else {
-                    r.stop();
+                    alrm_off = 0; //reset alarm
+                    //r.stop();
                 }
 
             }
-        }, 0, 1000); //period in milli-seconds
+        }, 0, 100); //period in milli-seconds
 
         initSaw();
     }
@@ -150,6 +155,7 @@ public class Alarm extends AppCompatActivity {
     //turn off alarm:
     public void stopAlarm(View view) {
         PdBase.sendFloat("alrmonOff", 0.0f);
+        alrm_off = 1;
     }
 
     //toggle button to control saw on/off:
@@ -188,6 +194,9 @@ public class Alarm extends AppCompatActivity {
             stringAlarmTime = alarmHours.toString().concat(":").concat(stringAlarmMinutes).concat(" PM");
 
         } else { //AM
+            if (alarmHours == 0) {//correcting for midnight
+                alarmHours = 12;
+            }
             stringAlarmTime = alarmHours.toString().concat(":").concat(stringAlarmMinutes).concat(" AM");
         }
 
