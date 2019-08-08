@@ -42,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
     Button b_activity;
 
+    Button alarm_activity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         initVolSaw();
         initVib();
         initActivity();
+        initAlarmActivity();
 
     }
 
@@ -74,8 +77,23 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void initAlarmActivity(){
+        alarm_activity = (Button) findViewById(R.id.alarm_activity);
+        alarm_activity.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                openAlarmActivity();
+            }
+        });
+    }
+
     public void openActivity2(){
         Intent intent = new Intent(this, Main2Activity.class);
+        startActivity(intent);
+    }
+
+    public void openAlarmActivity(){
+        Intent intent = new Intent(this, Alarm.class);
         startActivity(intent);
     }
 
