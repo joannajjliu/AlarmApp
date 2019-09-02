@@ -17,14 +17,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:text="1" >
-        </Button>
-
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="2" >
+            android:text="Alarm off" >
         </Button>
     </LinearLayout>
 
@@ -38,14 +31,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:text="3" >
-        </Button>
-
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="4" >
+            android:text="Alarm snooze (2 mins)" >
         </Button>
     </LinearLayout>
 </LinearLayout>

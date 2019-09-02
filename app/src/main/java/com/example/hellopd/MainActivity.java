@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.TextClock;
 import android.widget.ToggleButton;
 
 import org.puredata.android.io.AudioParameters;
@@ -20,29 +21,28 @@ import org.puredata.core.utils.IoUtils;
 import java.io.File;
 import java.io.IOException;
 import java.text.BreakIterator;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText sineText;
-    EditText sawText;
-    EditText sqrText;
+    TextClock currentTime2;
+    EditText alarmTime;
 
-    SeekBar sineSlider;
+    EditText sawText;
+
     SeekBar sawSlider;
-    SeekBar sqrSlider;
 
     SeekBar sawVolSlider;
-
     EditText sawVol;
-
-    Button b_long;
-    Button b_short;
-    Button b_pattern;
-    Vibrator vibrator;
 
     Button b_activity;
 
     Button alarm_activity;
+
+    public int alarm_freq = 19;
+    public int alarm_vol = 30; //initial volume
+    public int alrm_off = 0; //turns to 1 when off
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,14 +57,30 @@ public class MainActivity extends AppCompatActivity {
             Log.i("onCreate", "initialization and loading gone wrong :(");
             finish();
         }
-        initSine();
+
+        alarmTime = findViewById(R.id.editAlarm);
+        currentTime2 = findViewById(R.id.textClock2);
+
+        Log.d("alrmtime2", alarmTime.getText().toString());
+        Log.d("currtime2", currentTime2.getText().toString());
+
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (currentTime2.getText().toString().equals(alarmTime.getText().toString())) {
+                    //change to alarm activity:
+                    Intent intent = new Intent(MainActivity.this, Main2Activity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        }, 1000); //period in milli-seconds
+
         initSaw();
-        initSqr();
         initVolSaw();
-        initVib();
         initActivity();
         initAlarmActivity();
-
     }
 
     private void initActivity(){
@@ -97,82 +113,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public int sine_progress_val;
     public int saw_progress_val;
-    public int sqr_progress_val;
 
     public int saw_vol_progress_val;
 
-    private void initVib(){
-        b_long = (Button) findViewById(R.id.b_long);
-        b_short = (Button) findViewById(R.id.b_short);
-        b_pattern = (Button) findViewById(R.id.b_pattern);
-
-        vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-
-        b_long.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //vibrate in ms
-                vibrator.vibrate(500);
-
-            }
-        });
-
-        b_short.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //vibrate in ms
-                vibrator.vibrate(50);
-
-            }
-        });
-
-        b_pattern.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                // 0 : Start without a delay
-                // 400 : Vibrate for 400 milliseconds
-                // 200 : Pause for 200 milliseconds
-                // 400 : Vibrate for 400 milliseconds
-                long[] mVibratePattern = new long[]{0, 400, 200, 400};
-
-                // -1 : Do not repeat this pattern
-                // pass 0 if you want to repeat this pattern from 0th index
-                vibrator.vibrate(mVibratePattern, -1);
-            }
-        });
-    }
-
-    private void initSine(){
-        sineText = (EditText) findViewById(R.id.sineNum);
-        sineSlider = (SeekBar) findViewById(R.id.sineSlider);
-
-        //final Switch onOffSwitch = findViewById(R.id.onOffSwitch);
-
-        sineSlider.setOnSeekBarChangeListener(
-                new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        // updated continuously as the user slides the thumb
-                        sineText.setText(String.valueOf(progress));
-                        sine_progress_val = progress;
-                        PdBase.sendFloat("sinefreqNum", sine_progress_val);
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                        // called when the user first touches the SeekBar
-                    }
-
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                        // called after the user finishes moving the SeekBar
-                    }
-                }
-        );
-    }
 
     private void initVolSaw(){
 
@@ -214,34 +158,6 @@ public class MainActivity extends AppCompatActivity {
                         sawText.setText(String.valueOf(progress));
                         saw_progress_val = progress;
                         PdBase.sendFloat("sawfreqNum", saw_progress_val);
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                        // called when the user first touches the SeekBar
-                    }
-
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                        // called after the user finishes moving the SeekBar
-                    }
-                }
-        );
-    }
-
-    private void initSqr(){
-        sqrText = (EditText) findViewById(R.id.sqrNum);
-        sqrSlider = (SeekBar) findViewById(R.id.sqrSlider);
-
-        //final Switch onOffSwitch = findViewById(R.id.onOffSwitch);
-        sqrSlider.setOnSeekBarChangeListener(
-                new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        // updated continuously as the user slides the thumb
-                        sqrText.setText(String.valueOf(progress));
-                        sqr_progress_val = progress;
-                        PdBase.sendFloat("sqrfreqNum", sqr_progress_val);
                     }
 
                     @Override
@@ -300,17 +216,6 @@ public class MainActivity extends AppCompatActivity {
         PdAudio.stopAudio();
     }
 
-    //toggle button to control sine on/off:
-    public void sineState(View view) {
-        boolean checked = ((ToggleButton)view).isChecked();
-        if (checked) {
-            PdBase.sendFloat("sineonOff", 1.0f);
-            PdBase.sendFloat("sinefreqNum", sine_progress_val);
-        } else {
-            PdBase.sendFloat("sineonOff", 0.0f);
-        }
-    }
-
     //toggle button to control saw on/off:
     public void sawState(View view) {
         boolean checked = ((ToggleButton)view).isChecked();
@@ -323,14 +228,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //toggle button to control sqr on/off:
-    public void sqrState(View view) {
-        boolean checked = ((ToggleButton)view).isChecked();
-        if (checked) {
-            PdBase.sendFloat("sqronOff", 1.0f);
-            PdBase.sendFloat("sqrfreqNum", sqr_progress_val);
-        } else {
-            PdBase.sendFloat("sqronOff", 0.0f);
-        }
-    }
 }
